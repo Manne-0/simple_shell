@@ -10,8 +10,12 @@
 
 int main(int argc, char *argv[])
 {
-	char *input = NULL;
-	size_t input_size = 0;
+	char *input;
+	size_t input_size;
+	(void)argc;
+
+	input = NULL;
+	input_size = 0;
 
 	while (1)
 	{
@@ -19,7 +23,9 @@ int main(int argc, char *argv[])
 
 		if (input[0] == '\0')
 			break;
-		execute(input, argv[0]);
+		/*execute_cmd(input, argv[0]);*/
+
+		exe(input, argv[0]);
 	}
 	free(input);
 	return (0);

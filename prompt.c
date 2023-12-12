@@ -10,8 +10,10 @@
 
 void prompt(char **input, size_t *input_size)
 {
+	ssize_t read;
+
 	write(STDOUT_FILENO, "shell$ ", 7);
-	ssize_t read = getline(input, input_size, stdin);
+	read = getline(input, input_size, stdin);
 
 	/*Handles EOF*/
 	if (read == -1)

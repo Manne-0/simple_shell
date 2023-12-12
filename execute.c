@@ -1,33 +1,64 @@
 #include "shell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
 
-/**
- * execute - executes commands inputed
- * @input: user input
- */
-void execute(char *input, char *programName)
+void exe(char *command, char *programName)
 {
-	pid_t pid = fork();
+	char *args[100];
+	char *token = strtok(command, " ");
 
-	if (pid == 0)
+	int i = 0;
+	while (token != NULL && i < 100 - 1)
 	{
-		char *args[] = {input, NULL};
-		execve(input, args, NULL);
-		perror(programName);
-		exit(EXIT_FAILURE);
+		args[i++] = token;
+		token = strtok(NULL, " ");
 	}
-	else if (pid > 0)
-	{
-		waitpid(pid, NULL, 0);
-	}
-	else
-	{
-		perror(programName);
-		exit(EXIT_FAILURE);
-	}
+	args[i] = NULL;
+
+	if (_strchr(args[0], '/') != NULL) {
+
+        pid_t pid = fork();
+
+        if (pid == 0) {
+            execve(args[0], args, NULL);
+            perror(programName);
+            exit(EXIT_FAILURE);
+        } else if (pid > 0) {
+            waitpid(pid, NULL, 0);
+        } else {
+            perror(programName);
+            exit(EXIT_FAILURE);
+        }
+    } else {
+
+        char *path = _getenv("PATH");
+        char *path_copy = _strdup(path);
+        char *dir = strtok(path_copy, ":");
+
+        while (dir != NULL) {
+            char command_path[100];
+            myprintf(command_path, sizeof(command_path), "%s/%s", dir, args[0]);
+
+	    if (access(command_path, X_OK) == 0) {
+
+                pid_t pid;
+               pid = fork();
+
+                if (pid == 0) {
+                    execve(command_path, args, NULL);
+                    perror(programName);
+                    exit(EXIT_FAILURE);
+                } else if (pid > 0) {
+                    waitpid(pid, NULL, 0);
+                    break;
+                } else {
+                    perror(programName);
+                    exit(EXIT_FAILURE);
+                }
+            }
+
+            dir = strtok(NULL, ":");
+        }
+
+        free(path_copy);
+
+    }
 }

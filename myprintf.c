@@ -1,25 +1,40 @@
 #include "shell.h"
-
-void myprintf(char *buffer, const char *format, const char *arg)
+int myprintf(char *str, size_t size, const char *format, ...)
 {
-	while (*format != '\0')
+	int written, n;
+	va_list args;
+
+	if (str == NULL || format == NULL)
+		return (-1);
+
+	va_start(args, format);
+
+	written = 0;
+	n = size - 1;
+
+	while (*format && n > 0)
 	{
 		if (*format == '%' && *(format + 1) == 's')
 		{
-			while (*arg != '\0')
+			const char *s = va_arg(args, const char *);
+
+			while (*s && n > 0)
 			{
-				*buffer = *arg;
-				buffer++;
-				arg++;
+				*str++ = *s++;
+				n--;
+				written++;
 			}
 			format +=2;
 		}
 		else
 		{
-			*buffer = *format;
-			buffer++;
-			format++;
+			*str++ = *format++;
+			n--;
+			written++;
 		}
 	}
-	*buffer = '\0';
+	va_end(args);
+	*str = '\0';
+
+	return (written);
 }

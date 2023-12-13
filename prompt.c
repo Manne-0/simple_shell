@@ -5,14 +5,15 @@
 
 /**
  * prompt - display prompt to user for input
- * @input: input
+ * @input: pointer to input buffer
+ * @input_size: pointer to the size of input buffer
  */
 
 void prompt(char **input, size_t *input_size)
 {
 	ssize_t read;
 
-	write(STDOUT_FILENO, "shell$ ", 7);
+	write(STDOUT_FILENO, "shell$ ", strlen("shell$ "));
 	read = getline(input, input_size, stdin);
 
 	/*Handles EOF*/

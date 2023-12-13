@@ -1,8 +1,12 @@
 #include "shell.h"
+/**
+ * _getenv - get value of environment variable
+ * @name: name of environment variable
+ * Return: value if found otherwise NULL
+ */
 
 char *_getenv(const char *name)
 {
-	extern char **environ;
 	size_t name_length = strlen(name);
 	char **env;
 

@@ -1,4 +1,12 @@
 #include "shell.h"
+/**
+ * myprintf - custom implementation of printf
+ * @str: pointer to destination buffer
+ * @size: size of destination buffer
+ * @format: format string
+ * Return: number of characters written or -1 if error occurs
+ */
+
 int myprintf(char *str, size_t size, const char *format, ...)
 {
 	int written, n;
@@ -24,7 +32,7 @@ int myprintf(char *str, size_t size, const char *format, ...)
 				n--;
 				written++;
 			}
-			format +=2;
+			format += 2;
 		}
 		else
 		{

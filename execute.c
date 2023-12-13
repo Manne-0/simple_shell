@@ -1,4 +1,9 @@
 #include "shell.h"
+/**
+  * exe - execute a given command
+  * @command: command to be excuted
+  * @programName: name of the program
+  */
 
 void exe(char *command, char *programName)
 {
@@ -6,6 +11,7 @@ void exe(char *command, char *programName)
 	char *token = strtok(command, " ");
 
 	int i = 0;
+
 	while (token != NULL && i < 100 - 1)
 	{
 		args[i++] = token;
@@ -13,52 +19,62 @@ void exe(char *command, char *programName)
 	}
 	args[i] = NULL;
 
-	if (_strchr(args[0], '/') != NULL) {
+	if (_strchr(args[0], '/') != NULL)
+	{
+		pid_t pid = fork();
 
-        pid_t pid = fork();
+		if (pid == 0)
+		{
+			execve(args[0], args, NULL);
+			perror(programName);
+			exit(EXIT_FAILURE);
+		}
+		else if (pid > 0)
+		{
+			waitpid(pid, NULL, 0);
+		}
+		else
+		{
+			perror(programName);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		char *path = _getenv("PATH");
+		char *path_copy = _strdup(path);
+		char *dir = strtok(path_copy, ":");
 
-        if (pid == 0) {
-            execve(args[0], args, NULL);
-            perror(programName);
-            exit(EXIT_FAILURE);
-        } else if (pid > 0) {
-            waitpid(pid, NULL, 0);
-        } else {
-            perror(programName);
-            exit(EXIT_FAILURE);
-        }
-    } else {
+		while (dir != NULL)
+		{
+			char command_path[100];
 
-        char *path = _getenv("PATH");
-        char *path_copy = _strdup(path);
-        char *dir = strtok(path_copy, ":");
+			myprintf(command_path, sizeof(command_path), "%s/%s", dir, args[0]);
+			if (access(command_path, X_OK) == 0)
+			{
+				pid_t pid = fork();
 
-        while (dir != NULL) {
-            char command_path[100];
-            myprintf(command_path, sizeof(command_path), "%s/%s", dir, args[0]);
+			if (pid == 0)
+			{
+				execve(command_path, args, NULL);
+				perror(programName);
+				exit(EXIT_FAILURE);
+			}
+			else if (pid > 0)
+			{
+				waitpid(pid, NULL, 0);
+				break;
+			}
+			else
+			{
+				perror(programName);
+				exit(EXIT_FAILURE);
+			}
+			}
 
-	    if (access(command_path, X_OK) == 0) {
+			dir = strtok(NULL, ":");
+		}
 
-                pid_t pid;
-               pid = fork();
-
-                if (pid == 0) {
-                    execve(command_path, args, NULL);
-                    perror(programName);
-                    exit(EXIT_FAILURE);
-                } else if (pid > 0) {
-                    waitpid(pid, NULL, 0);
-                    break;
-                } else {
-                    perror(programName);
-                    exit(EXIT_FAILURE);
-                }
-            }
-
-            dir = strtok(NULL, ":");
-        }
-
-        free(path_copy);
-
-    }
+		free(path_copy);
+	}
 }

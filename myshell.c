@@ -1,7 +1,4 @@
 #include "shell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 /**
  * main - entry point
@@ -12,12 +9,10 @@
 
 int main(int argc, char *argv[])
 {
-	char *input;
-	size_t input_size;
-	(void)argc;
+	char *input = NULL;
+	size_t input_size = 0;
 
-	input = NULL;
-	input_size = 0;
+	(void)argc;
 
 	while (1)
 	{
@@ -25,9 +20,20 @@ int main(int argc, char *argv[])
 
 		if (input[0] == '\0')
 			break;
-		/*execute_cmd(input, argv[0]);*/
 
-		exe(input, argv[0]);
+		if (strcmp(input, "exit") == 0)
+		{
+			free(input);
+			exit(EXIT_SUCCESS);
+		}
+
+		if (strcmp(input, "env") == 0)
+		{
+			print_env();
+			continue;
+		}
+
+		execute(input, argv[0]);
 	}
 	free(input);
 	return (0);

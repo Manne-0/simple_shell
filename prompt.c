@@ -13,7 +13,7 @@ void prompt(char **input, size_t *input_size)
 {
 	ssize_t read;
 
-	write(STDOUT_FILENO, "shell$ ", strlen("shell$ "));
+	write(STDOUT_FILENO, "shell$ ", 7);
 	read = getline(input, input_size, stdin);
 
 	/*Handles EOF*/

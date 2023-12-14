@@ -9,8 +9,8 @@
 
 int myprintf(char *str, size_t size, const char *format, ...)
 {
-	int written, n;
 	va_list args;
+	int written, n;
 
 	if (str == NULL || format == NULL)
 		return (-1);
@@ -24,7 +24,8 @@ int myprintf(char *str, size_t size, const char *format, ...)
 	{
 		if (*format == '%' && *(format + 1) == 's')
 		{
-			const char *s = va_arg(args, const char *);
+			const char *s;
+			s = va_arg(args, const char *);
 
 			while (*s && n > 0)
 			{
@@ -41,6 +42,7 @@ int myprintf(char *str, size_t size, const char *format, ...)
 			written++;
 		}
 	}
+
 	va_end(args);
 	*str = '\0';
 

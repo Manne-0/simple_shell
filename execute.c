@@ -33,22 +33,32 @@ void execute(char *command, char *programName)
 
 void execute_direct_path(char *args[], char *programName)
 {
-	pid_t pid = fork();
+	char *slash = _strchr(args[0], '/');
 
-	if (pid == 0)
+	if (slash != NULL)
 	{
-		execve(args[0], args, NULL);
-		perror(programName);
-		exit(EXIT_FAILURE);
-	}
-	else if (pid > 0)
-	{
-		waitpid(pid, NULL, 0);
+		pid_t pid = fork();
+
+		if (pid == 0)
+		{
+			execve(args[0], args, NULL);
+			perror(programName);
+			exit(EXIT_FAILURE);
+		}
+		else if (pid > 0)
+		{
+			waitpid(pid, NULL, 0);
+		}
+		else
+		{
+			perror(programName);
+			exit(EXIT_FAILURE);
+		}
 	}
 	else
 	{
-		perror(programName);
-		exit(EXIT_FAILURE);
+		write(STDERR_FILENO, programName, _strlen(programName));
+		write(STDERR_FILENO, ": Error Invalid path\n", 22);
 	}
 }
 
@@ -72,7 +82,8 @@ void execute_path_resolution(char *args[], char *programName)
 		if (access(command_path, X_OK) == 0)
 		{
 			execute_direct_path(args, programName);
-			break;
+			free(path_copy);
+			return;
 		}
 
 		dir = strtok(NULL, ":");

@@ -33,12 +33,28 @@ void execute(char *command, char *programName)
 
 void execute_direct_path(char *args[], char *programName)
 {
+	int i = 0;
+	char num_buf[16];
+	int len;
+
 	pid_t pid = fork();
 
 	if (pid == 0)
 	{
-		execve(args[0], args, NULL);
-		perror(programName);
+		execve(args[0], args, environ);
+		write(STDERR_FILENO, programName, strlen(programName));
+		write(STDERR_FILENO, ": ", 2);
+
+		while (args[i] != NULL)
+			i++;
+
+		len = sprintf(num_buf, "%d", i + 1);
+
+		write(STDERR_FILENO, num_buf, len);
+		write(STDERR_FILENO, ": ", 2);
+		write(STDERR_FILENO, args[0], strlen(args[0]));
+		write(STDERR_FILENO, ": not found\n", 12);
+
 		exit(EXIT_FAILURE);
 	}
 	else if (pid > 0)
@@ -47,7 +63,9 @@ void execute_direct_path(char *args[], char *programName)
 	}
 	else
 	{
-		perror(programName);
+		write(STDERR_FILENO, programName, strlen(programName));
+		write(STDERR_FILENO, ": ", 2);
+		perror(args[0]);
 		exit(EXIT_FAILURE);
 	}
 }

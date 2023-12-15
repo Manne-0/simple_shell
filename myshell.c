@@ -34,6 +34,9 @@ int main(int argc, char *argv[])
 		}
 
 		execute(input, argv[0]);
+
+		free(input);
+		input = NULL;
 	}
 
 	free(input);

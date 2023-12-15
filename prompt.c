@@ -13,13 +13,33 @@ void prompt(char **input, size_t *input_size)
 {
 	ssize_t read;
 
-	write(STDOUT_FILENO, "shell$ ", 7);
+	if (isatty(STDIN_FILENO))
+	{
+		write(STDOUT_FILENO, "shell$ ", 7);
+	}
+
 	read = getline(input, input_size, stdin);
 
 	/*Handles EOF*/
 	if (read == -1)
 	{
-		**input = '\0';
+		if (feof(stdin))
+		{
+			if (isatty(STDIN_FILENO))
+			{
+				write(STDOUT_FILENO, "\n", 1);
+			}
+			free(*input);
+			*input = NULL;
+			exit(EXIT_SUCCESS);
+		}
+		else
+		{
+			perror("getline");
+			free(*input);
+			*input = NULL;
+			exit(EXIT_FAILURE);
+		}
 	}
 	else if ((*input)[read - 1] == '\n')
 	{

@@ -19,7 +19,7 @@ void prompt(char **input, size_t *input_size)
 	/*Handles EOF*/
 	if (read == -1)
 	{
-		(*input)[0] = '\0';
+		**input = '\0';
 	}
 	else if ((*input)[read - 1] == '\n')
 	{

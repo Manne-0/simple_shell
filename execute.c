@@ -19,7 +19,7 @@ void execute(char *command, char *programName)
 	}
 	args[i] = NULL;
 
-	if (_strchr(args[0], '/') != NULL)
+	if (strchr(args[0], '/') != NULL)
 		execute_direct_path(args, programName);
 	else
 		execute_path_resolution(args, programName);
@@ -33,32 +33,22 @@ void execute(char *command, char *programName)
 
 void execute_direct_path(char *args[], char *programName)
 {
-	char *slash = _strchr(args[0], '/');
+	pid_t pid = fork();
 
-	if (slash != NULL)
+	if (pid == 0)
 	{
-		pid_t pid = fork();
-
-		if (pid == 0)
-		{
-			execve(args[0], args, NULL);
-			perror(programName);
-			exit(EXIT_FAILURE);
-		}
-		else if (pid > 0)
-		{
-			waitpid(pid, NULL, 0);
-		}
-		else
-		{
-			perror(programName);
-			exit(EXIT_FAILURE);
-		}
+		execve(args[0], args, NULL);
+		perror(programName);
+		exit(EXIT_FAILURE);
+	}
+	else if (pid > 0)
+	{
+		waitpid(pid, NULL, 0);
 	}
 	else
 	{
-		write(STDERR_FILENO, programName, _strlen(programName));
-		write(STDERR_FILENO, ": Error Invalid path\n", 22);
+		perror(programName);
+		exit(EXIT_FAILURE);
 	}
 }
 
@@ -71,19 +61,20 @@ void execute_direct_path(char *args[], char *programName)
 void execute_path_resolution(char *args[], char *programName)
 {
 	char *path = _getenv("PATH");
-	char *path_copy = _strdup(path);
+	char *path_copy = strdup(path);
 	char *dir = strtok(path_copy, ":");
+	char command_path[100];
 
 	while (dir != NULL)
 	{
-		char command_path[100];
+		strcpy(command_path, dir);
+		strcat(command_path, "/");
+		strcat(command_path, args[0]);
 
-		myprintf(command_path, sizeof(command_path), "%s/%s", dir, args[0]);
 		if (access(command_path, X_OK) == 0)
 		{
 			execute_direct_path(args, programName);
-			free(path_copy);
-			return;
+			break;
 		}
 
 		dir = strtok(NULL, ":");

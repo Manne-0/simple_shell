@@ -19,7 +19,7 @@ void execute(char *command, char *programName)
 	}
 	args[i] = NULL;
 
-	if (args[0] != NULL && strchr(args[0], '/') != NULL)
+	if (args[0] != NULL && _strchr(args[0], '/') != NULL)
 		execute_direct_path(args, programName);
 	else
 		execute_path_resolution(args, programName);

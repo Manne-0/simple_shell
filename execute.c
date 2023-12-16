@@ -80,23 +80,25 @@ void execute_direct_path(char *args[], char *programName)
 void execute_path_resolution(char *args[], char *programName)
 {
 	char *path = _getenv("PATH");
-	char *path_copy = strdup(path);
+	char *path_copy = _strdup(path);
 	char *dir = strtok(path_copy, ":");
 	char command_path[PATH_MAX];
 
-	if (path_copy == NULL)
+	if (path == NULL)
 	{
-		perror(programName);
-		exit(EXIT_FAILURE);
+		perror("PATH not found");
+		return;
 	}
 
 	while (dir != NULL)
 	{
-		if (strlen(dir) + strlen(args[0]) + 2 <= PATH_MAX)
+		size_t len = _strlen(dir) + _strlen(args[0]) + 2;
+
+		if (len <= 100)
 		{
-			strcpy(command_path, dir);
-			strcat(command_path, "/");
-			strcat(command_path, args[0]);
+			_strcpy(command_path, dir);
+			_strcat(command_path, "/");
+			_strcat(command_path, args[0]);
 
 			if (access(command_path, X_OK) == 0)
 			{
@@ -104,11 +106,7 @@ void execute_path_resolution(char *args[], char *programName)
 				break;
 			}
 		}
-		else
-		{
-			fprintf(stderr, "Path is too long: %s/%s\n", dir, args[0]);
-			exit(EXIT_FAILURE);
-		}
+
 		dir = strtok(NULL, ":");
 	}
 	free(path_copy);

@@ -21,5 +21,9 @@ char *_strchr(char *s, char c);
 char *_getenv(const char *name);
 char *path(const char *command);
 void print_env(void);
+size_t _strlen(const char *s);
+char *_strcpy(char *dest, const char *src);
+char *_strcat(char *dest, const char *src);
+char *_strdup(const char *s);
 
 #endif

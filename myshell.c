@@ -19,10 +19,7 @@ int main(int argc, char *argv[])
 		prompt(&input, &input_size);
 
 		if (input[0] == '\0')
-		{
-			free(input);
 			break;
-		}
 
 		if (strcmp(input, "exit") == 0)
 		{

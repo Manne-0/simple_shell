@@ -1,5 +1,4 @@
 #include "shell.h"
-#include <limits.h>
 /**
   * execute - execute a given command
   * @command: command to be excuted
@@ -56,7 +55,7 @@ void execute_direct_path(char *args[], char *programName)
 		write(STDERR_FILENO, args[0], strlen(args[0]));
 		write(STDERR_FILENO, ": not found\n", 12);
 
-		exit(2);
+		exit(EXIT_FAILURE);
 	}
 	else if (pid > 0)
 	{
@@ -82,34 +81,22 @@ void execute_path_resolution(char *args[], char *programName)
 	char *path = _getenv("PATH");
 	char *path_copy = strdup(path);
 	char *dir = strtok(path_copy, ":");
-	char command_path[PATH_MAX];
-
-	if (path_copy == NULL)
-	{
-		perror(programName);
-		exit(EXIT_FAILURE);
-	}
+	char command_path[100];
 
 	while (dir != NULL)
 	{
-		if (strlen(dir) + strlen(args[0]) + 2 <= PATH_MAX)
-		{
-			strcpy(command_path, dir);
-			strcat(command_path, "/");
-			strcat(command_path, args[0]);
+		strcpy(command_path, dir);
+		strcat(command_path, "/");
+		strcat(command_path, args[0]);
 
-			if (access(command_path, X_OK) == 0)
-			{
-				execute_direct_path(args, programName);
-				break;
-			}
-		}
-		else
+		if (access(command_path, X_OK) == 0)
 		{
-			fprintf(stderr, "Path is too long: %s/%s\n", dir, args[0]);
-			exit(EXIT_FAILURE);
+			execute_direct_path(args, programName);
+			break;
 		}
+
 		dir = strtok(NULL, ":");
 	}
+
 	free(path_copy);
 }

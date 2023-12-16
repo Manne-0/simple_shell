@@ -33,16 +33,11 @@ int main(int argc, char *argv[])
 		if (strcmp(input, "env") == 0)
 		{
 			print_env();
-		}
-		else
-		{
-			execute(input, argv[0]);
+			continue;
 		}
 
-		free(input);
-		input = NULL;
+		execute(input, argv[0]);
 	}
-
 	free(input);
-	return (0);
+	input = NULL;
 }

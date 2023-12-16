@@ -19,7 +19,10 @@ int main(int argc, char *argv[])
 		prompt(&input, &input_size);
 
 		if (input[0] == '\0')
+		{
+			free(input);
 			break;
+		}
 
 		if (strcmp(input, "exit") == 0)
 		{
@@ -30,10 +33,11 @@ int main(int argc, char *argv[])
 		if (strcmp(input, "env") == 0)
 		{
 			print_env();
-			continue;
 		}
-
-		execute(input, argv[0]);
+		else
+		{
+			execute(input, argv[0]);
+		}
 
 		free(input);
 		input = NULL;
